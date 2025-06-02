@@ -23,6 +23,7 @@ ml FastQC/0.11.9-Java-11
 mkdir $data/raw_fastqc_results/
 
 fastqc $data/raw_fastq/*.fastq.gz\
+ -t 16\
  -o $data/raw_fastqc_results/
 
 ml purge
@@ -61,6 +62,7 @@ ml FastQC/0.11.9-Java-11
 mkdir $data/trimmed_fastqc_results/
 
 fastqc $data/trimmed_fastq/*.fastq.gz\
+ -t 16\
  -o $data/trimmed_fastqc_results/
 
 ml purge
