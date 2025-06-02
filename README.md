@@ -1,1 +1,1 @@
-# binf860_report_rrt
+# binf8960_report_rrt
