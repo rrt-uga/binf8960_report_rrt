@@ -1,0 +1,10 @@
+*.out
+*.zip
+*.html
+*.gz
+*.fa
+*.fastq
+*.sam
+*.bam
+*.vcf
+*.bcf
