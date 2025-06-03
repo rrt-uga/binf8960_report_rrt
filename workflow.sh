@@ -93,16 +93,16 @@ bwa index\
 
 mkdir $results/sam
 
-for fastq in $data/trimmed_fastq/*.fastq.gz
+for fastq in $data/trimmed_fastq/*.paired.fastq.gz
 do
 	gzip -d $fastq
 done
 
-for fwd in $data/trimmed_fastq/*_1.trim.sub.fastq
+for fwd in $data/trimmed_fastq/*_1.paired.fastq
 do
-	sample=$(basename $fwd _1.trim.sub.fastq)
+	sample=$(basename $fwd _1.paired.fastq)
 	echo "Aligning $sample"
-	rev=$data/trimmed_fastq_small/${sample}_2.trim.sub.fastq
+	rev=$data/trimmed_fastq/${sample}_2.paired.fastq
 	bwa mem\
 	 -t 16\
 	 $data/genomes/ecoli_rel606\
@@ -121,9 +121,9 @@ mkdir $results/bam
 mkdir $results/bcf
 mkdir $results/vcf
 
-for fwd in $data/trimmed_fastq/*_1.trim.sub.fastq
+for fwd in $data/trimmed_fastq/*_1.paired.fastq
 do
-        sample=$(basename $fwd _1.trim.sub.fastq)
+        sample=$(basename $fwd _1.paired.fastq)
 	echo "Generate and Sort $sample BAM"
 	samtools view\
 	 -@ 16\
@@ -139,9 +139,9 @@ ml purge
 
 ml BCFtools/1.18-GCC-12.3.0	#Load BCFtools
 
-for fwd in $data/trimmed_fastq/*_1.trim.sub.fastq
+for fwd in $data/trimmed_fastq/*_1.paired.fastq
 do
-        sample=$(basename $fwd _1.trim.sub.fastq)
+        sample=$(basename $fwd _1.paired.fastq)
 	echo "Calling variants for $sample"
 	bcftools mpileup\
 	 --threads 16\
