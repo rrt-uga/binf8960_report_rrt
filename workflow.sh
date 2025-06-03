@@ -50,7 +50,7 @@ do
         $Trimmomatic PE $data/raw_fastq/${sample}_1.fastq.gz $data/raw_fastq/${sample}_2.fastq.gz\
          $data/trimmed_fastq/${sample}_1.paired.fastq.gz $data/trimmed_fastq/${sample}_1.unpaired.fastq.gz\
          $data/trimmed_fastq/${sample}_2.paired.fastq.gz $data/trimmed_fastq/${sample}_2.unpaired.fastq.gz\
-         ILLUMINACLIP:$EBROOTTRIMMOMATIC/adapters/:2:30:10:5:True SLIDINGWINDOW:4:20
+         ILLUMINACLIP:$EBROOTTRIMMOMATIC/adapters/NexteraPE-PE.fa:2:30:10:5:True SLIDINGWINDOW:4:20
 done
 
 ml purge
