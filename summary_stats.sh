@@ -17,11 +17,11 @@ ml SAMtools/1.18-GCC-12.3.0     #Load SAMtools
 
 mkdir $results/stats/
 
-echo "Sample" > $results/stats/sample.tsv
+echo "Sample" > $results/stats/Sample.tsv
 grep -r "_1" $data/raw_fastqc_results/multiqc_data/multiqc_fastqc.txt |\
  awk 'BEGIN{FS=OFS="\t"}{print $1}' |\
  sed "s/_1//g" \
- >> $results/stats/sample.tsv
+ >> $results/stats/Sample.tsv
 
 echo "RawReadCount" > $results/stats/RawReadCount.tsv
 grep -r "_1" $data/raw_fastqc_results/multiqc_data/multiqc_fastqc.txt |\
@@ -50,5 +50,13 @@ do
  grep -c -v -r "#" $vcf \
  >> $results/stats/VariantCount.tsv
 done
+
+paste -d '\t'\
+ $results/stats/sample.tsv\
+ $results/stats/RawReadCount.tsv\
+ $results/stats/TrimmedReadCount.tsv\
+ $results/stats/AlignedReadCount.tsv\
+ $results/stats/VariantCount.tsv\
+ > $results/stats/reads_stat.tsv
 
 ml purge
