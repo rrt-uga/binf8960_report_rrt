@@ -13,22 +13,25 @@
 data="/scratch/rt36111/binf8960_report_rrt/data"
 results="/scratch/rt36111/binf8960_report_rrt/results"
 
-ml SAMtools/1.18-GCC-12.3.0     #Load SAMtools
+ml SAMtools/1.18-GCC-12.3.0     # Load SAMtools
 
 mkdir $results/stats/
 
+# Retrieve Sample Name
 echo "Sample" > $results/stats/Sample.tsv
 grep -r "_1" $data/raw_fastqc_results/multiqc_data/multiqc_fastqc.txt |\
  awk 'BEGIN{FS=OFS="\t"}{print $1}' |\
  sed "s/_1//g" \
  >> $results/stats/Sample.tsv
 
+# Retrieve Raw Read Count
 echo "RawReadCount" > $results/stats/RawReadCount.tsv
 grep -r "_1" $data/raw_fastqc_results/multiqc_data/multiqc_fastqc.txt |\
  awk 'BEGIN{FS=OFS="\t"}{print $5}' |\
  sed "s/\.0//g"\
  >> $results/stats/RawReadCount.tsv
 
+# Retrieve Trimmed Read Count
 echo "TrimmedReadCount" > $results/stats/TrimmedReadCount.tsv
 grep -r "_1" $data/trimmed_fastqc_results/multiqc_data/multiqc_fastqc.txt |\
  grep -r "\.paired" - |\
@@ -36,6 +39,7 @@ grep -r "_1" $data/trimmed_fastqc_results/multiqc_data/multiqc_fastqc.txt |\
  sed "s/\.0//g"\
  >> $results/stats/TrimmedReadCount.tsv
 
+# Retrieve Aligned Read Count
 echo "AlignedReadCount" > $results/stats/AlignedReadCount.tsv
 for bam in $results/bam/*.sorted.bam
 do samtools stats\
@@ -46,6 +50,7 @@ do samtools stats\
  >> $results/stats/AlignedReadCount.tsv
 done
 
+# Retrieve Variant Count
 echo "VariantCount" > $results/stats/VariantCount.tsv
 for vcf in results/vcf/*.vcf
 do
@@ -53,8 +58,9 @@ do
  >> $results/stats/VariantCount.tsv
 done
 
+# Combine all tsv files
 paste -d '\t'\
- $results/stats/sample.tsv\
+ $results/stats/Sample.tsv\
  $results/stats/RawReadCount.tsv\
  $results/stats/TrimmedReadCount.tsv\
  $results/stats/AlignedReadCount.tsv\
