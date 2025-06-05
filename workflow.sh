@@ -13,14 +13,18 @@
 genome_url="ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/017/985/GCA_000017985.1_ASM1798v1/GCA_000017985.1_ASM1798v1_genomic.fna.gz"
 
 # Location of directories
+raw_fastq="/work/binf8960/instructor_data/raw_fastq"
 data="/scratch/rt36111/binf8960_report_rrt/data"
 results="/scratch/rt36111/binf8960_report_rrt/results"
+
+# Copying raw fastq data
+cp -r $raw_fastq $data/
 
 # Load FastQC
 ml FastQC/0.11.9-Java-11
 
 # FastQC of Raw Data
-mkdir $data/raw_fastqc_results/
+mkdir $data/raw_fastqc_results/	# Directory for FastQC data of Raw Reads
 
 fastqc $data/raw_fastq/*.fastq.gz\
  -t 16\
@@ -59,7 +63,7 @@ ml purge
 ml FastQC/0.11.9-Java-11
 
 # FastQC of Trimmed Data
-mkdir $data/trimmed_fastqc_results/
+mkdir $data/trimmed_fastqc_results/	# Directory for FastQC data of Trimmed Reads
 
 fastqc $data/trimmed_fastq/*.fastq.gz\
  -t 16\
@@ -77,10 +81,12 @@ multiqc $data/trimmed_fastqc_results/\
 ml purge
 
 # Download E. coli genome
-mkdir $data/genomes
+
+mkdir $data/genomes	#	Directory for storing genome
+
 wget -O $data/genomes/ecoli_rel606.fna.gz\
  $genome_url
-gzip -d $data/genomes/ecoli_rel606.fna.gz
+gzip -d $data/genomes/ecoli_rel606.fna.gz	#	extract genome FASTA
 
 # Index the Genome
 
@@ -91,11 +97,11 @@ bwa index\
 
 # Align reads to the genome
 
-mkdir $results/sam
+mkdir $results/sam	# Directory of SAM files
 
 for fastq in $data/trimmed_fastq/*.paired.fastq.gz
 do
-	gzip -d $fastq
+	gzip -d $fastq	#	extract fastq.gz
 done
 
 for fwd in $data/trimmed_fastq/*_1.paired.fastq
@@ -117,9 +123,9 @@ ml purge
 
 ml SAMtools/1.18-GCC-12.3.0	#Load SAMtools
 
-mkdir $results/bam
-mkdir $results/bcf
-mkdir $results/vcf
+mkdir $results/bam	# Directory for BAM files
+mkdir $results/bcf	# Directory for BCF files
+mkdir $results/vcf	# Directory for VCF files
 
 for fwd in $data/trimmed_fastq/*_1.paired.fastq
 do
@@ -128,11 +134,11 @@ do
 	samtools view\
 	 -@ 16\
 	 -S -b $results/sam/$sample.sam\
-	 > $results/bam/$sample.bam
+	 > $results/bam/$sample.bam	#	SAM to BAM
 	samtools sort\
 	 -@ 16\
 	 -o $results/bam/$sample.sorted.bam\
-	 $results/bam/$sample.bam
+	 $results/bam/$sample.bam	#	Sort BAM
 done
 
 ml purge
@@ -148,11 +154,11 @@ do
 	 -O b\
 	 -o $results/bcf/$sample.bcf\
 	 -f $data/genomes/ecoli_rel606.fna\
-	 $results/bam/$sample.sorted.bam
+	 $results/bam/$sample.sorted.bam	#	Generate BCF
 	bcftools call\
 	 --threads 16\
 	 --ploidy 1\
 	 -m -v\
 	 -o $results/vcf/$sample.vcf\
-	 $results/bcf/$sample.bcf
+	 $results/bcf/$sample.bcf	#	Call Variant
 done
