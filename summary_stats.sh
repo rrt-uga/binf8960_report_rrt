@@ -49,7 +49,7 @@ grep -r "_1" $data/raw_fastqc_results/multiqc_data/multiqc_fastqc.txt |\
 echo "TrimmedReadCount" > $results/stats/TrimmedReadCount.tsv
 grep -r "_1" $data/trimmed_fastqc_results/multiqc_data/multiqc_fastqc.txt |\
  grep -r "\.paired" - |\
- awk 'BEGIN{FS=OFS="\t"}{print $5}' |\
+ awk 'BEGIN{FS=OFS="\t"}{print $5*2}' |\
  sed "s/\.0//g"\
  >> $results/stats/TrimmedReadCount.tsv
 
