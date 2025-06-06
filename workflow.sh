@@ -82,15 +82,15 @@ ml purge
 
 # Download E. coli genome
 
-mkdir $data/genomes	#	Directory for storing genome
+mkdir $data/genomes	# Directory for storing genome
 
 wget -O $data/genomes/ecoli_rel606.fna.gz\
  $genome_url
-gzip -d $data/genomes/ecoli_rel606.fna.gz	#	extract genome FASTA
+gzip -d $data/genomes/ecoli_rel606.fna.gz	# extract genome FASTA
 
 # Index the Genome
 
-ml BWA/0.7.18-GCCcore-13.3.0	#Load BWA
+ml BWA/0.7.18-GCCcore-13.3.0	# Load BWA
 bwa index\
  -p $data/genomes/ecoli_rel606\
  $data/genomes/ecoli_rel606.fna
@@ -101,7 +101,7 @@ mkdir $results/sam	# Directory of SAM files
 
 for fastq in $data/trimmed_fastq/*.paired.fastq.gz
 do
-	gzip -d $fastq	#	extract fastq.gz
+	gzip -d $fastq	# extract fastq.gz
 done
 
 for fwd in $data/trimmed_fastq/*_1.paired.fastq
@@ -121,7 +121,7 @@ ml purge
 
 # Call variants in the aligned reads
 
-ml SAMtools/1.18-GCC-12.3.0	#Load SAMtools
+ml SAMtools/1.18-GCC-12.3.0	# Load SAMtools
 
 mkdir $results/bam	# Directory for BAM files
 mkdir $results/bcf	# Directory for BCF files
@@ -134,16 +134,16 @@ do
 	samtools view\
 	 -@ 16\
 	 -S -b $results/sam/$sample.sam\
-	 > $results/bam/$sample.bam	#	SAM to BAM
+	 > $results/bam/$sample.bam	# SAM to BAM
 	samtools sort\
 	 -@ 16\
 	 -o $results/bam/$sample.sorted.bam\
-	 $results/bam/$sample.bam	#	Sort BAM
+	 $results/bam/$sample.bam	# Sort BAM
 done
 
 ml purge
 
-ml BCFtools/1.18-GCC-12.3.0	#Load BCFtools
+ml BCFtools/1.18-GCC-12.3.0	# Load BCFtools
 
 for fwd in $data/trimmed_fastq/*_1.paired.fastq
 do
@@ -154,11 +154,11 @@ do
 	 -O b\
 	 -o $results/bcf/$sample.bcf\
 	 -f $data/genomes/ecoli_rel606.fna\
-	 $results/bam/$sample.sorted.bam	#	Generate BCF
+	 $results/bam/$sample.sorted.bam	# Generate BCF
 	bcftools call\
 	 --threads 16\
 	 --ploidy 1\
 	 -m -v\
 	 -o $results/vcf/$sample.vcf\
-	 $results/bcf/$sample.bcf	#	Call Variant
+	 $results/bcf/$sample.bcf	# Generate VCF to Call Variant
 done
